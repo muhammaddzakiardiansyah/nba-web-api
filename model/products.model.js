@@ -1,16 +1,13 @@
-const { request } = require("express");
-
+const db = require('../helper/config');
 const productsModel = {
     get: (req, res) => {
-        return [
-            {produk: "sandal",perusahaan: "swalow"},
-            {produk: "sandal",perusahaan: "swalow"},
-            {produk: "sandal",perusahaan: "swalow"},
-            {produk: "sandal",perusahaan: "swalow"},
-            {produk: "sandal",perusahaan: "swalow"},
-            {produk: "sandal",perusahaan: "swalow"},
-            {produk: "sandal",perusahaan: "swalow"},
-        ];
+        db.query('SELECT * FROM products', (err, result) => {
+            if(err) {
+                return {message: err};
+            } else {
+                return console.log(result);
+            }
+        })
     },
     store: (request) => {
         const {produk, perusahaan, originalname} = request;
