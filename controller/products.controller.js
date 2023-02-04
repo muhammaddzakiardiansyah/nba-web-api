@@ -1,39 +1,77 @@
 const productsModel = require('../model/products.model');
 const {unlink} = require('node:fs');
 const productsContrller = {
-    get: (req, res) => {
-        return productsModel.get(req.query).then( (result) => {
-            return res.status(200).send({message: "success", data: result});
-        }).catch( (err) => {
-            return res.status(500).send({message: "failed", data: err});
-        })
+    get: async (req, res) => {
+        try {
+            const result = await productsModel.get();
+            return res.status(200).send({
+                message: "Berhasil menampilkana semua data",
+                data: result
+            });
+        } catch (error) {
+            return res.status(500).send({
+                message: error.message
+            })
+        }
     },
-    store: (req, res) => {
+    store: async (req, res) => {
         const request = {
             ...req.body,
-            ...req.file
+            img: req.file.filename
         }
-        const product = productsModel.store(request);
-        return res.send(product);
+        console.log(res)
+        try {
+            const result = await productsModel.store(request);
+            return res.status(201).send({
+                message: "Berhasil Nambah Data",
+                data: {
+                    ...request,
+                    db: result
+                }
+            });
+        } catch (error) {
+            return res.status(500).send({
+                message: error.message
+            });
+        }
+        // productsModel.store(request).then((result)=> {
+        //     return res.status(201).send({
+        //         message: "Berhasil Nambah Data",
+        //         data: request
+        //     });
+        // }).catch((awok)=> {
+        //     return res.send({message: awok.message})
+        // })
     },
-    update: (req, res) => {
-        const request = {
-            ...req.params,
-            ...req.body
-        };
-        const product = productsModel.update(request);
-        return res.send(product);
+    update: async (req, res) => {
+        try {
+            const request = {
+                ...req.body,
+                id: req.params.id,
+                img: req.file.filename
+            };
+            const result = await productsModel.update(request);
+            return res.send(result);
+        } catch (error) {
+            return res.status(500).send({
+                message: error.message
+            });
+        }
     },
-    dump: (req, res) => {
-        const request = {
-            ...req.params
-        };
-        const product = productsModel.dump(request);
-        console.log(req.params.filename);
-        unlink(`public/uploads/${req.params.filename}`, (err) => {
-            if(err) console.log(err);
-        });
-        return res.send(product);
+    dump: async (req, res) => {
+        try {
+            const request = {
+                ...req.params
+            };
+            const result = await productsModel.dump(request);
+            return res.status(200).send({
+                message:result
+            });
+        } catch (error) {
+            return res.status(500).send({
+                message: error.message
+            });
+        }
     }
 }
 
