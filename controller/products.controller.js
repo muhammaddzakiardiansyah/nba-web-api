@@ -2,8 +2,11 @@ const productsModel = require('../model/products.model');
 const {unlink} = require('node:fs');
 const productsContrller = {
     get: (req, res) => {
-        const products = productsModel.get();
-        return res.send(products);
+        return productsModel.get(req.query).then( (result) => {
+            return res.status(200).send({message: "success", data: result});
+        }).catch( (err) => {
+            return res.status(500).send({message: "failed", data: err});
+        })
     },
     store: (req, res) => {
         const request = {
