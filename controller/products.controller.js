@@ -51,7 +51,13 @@ const productsContrller = {
                 img: req.file.filename
             };
             const result = await productsModel.update(request);
-            return res.send(result);
+            return res.status(201).send({
+                message: `berhasil update data dengan id ${request.id}`,
+                data: {
+                    ...request,
+                    db: result
+                }
+            });
         } catch (error) {
             return res.status(500).send({
                 message: error.message

@@ -29,8 +29,20 @@ const productsModel = {
         const {id} = request;
         const {nama, deskripsi, img, harga} = request;
         return new Promise( (resolve, reject) => {
-            db.query(`SELECT * FROM products WHERE id=`)
-        })
+            db.query(`SELECT * FROM products WHERE id='${id}'`, (err, resultGet) => {
+                unlink(`public/uploads/${resultGet[0].img}`, (err) => {
+                    if(err) console.log(err);
+                });
+                if(!err) {
+                    db.query(`UPDATE products SET nama='${nama}', deskripsi='${deskripsi}', img='${img}', harga='${harga}' WHERE id='${id}'`, (err, result) => {
+                        if(err) {
+                            return reject(err);
+                        }
+                        return resolve(result);
+                    });
+                }
+            });
+        });
     },
     dump: (request) => {
         const {id} = request;
