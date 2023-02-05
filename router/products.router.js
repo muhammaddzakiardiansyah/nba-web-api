@@ -5,7 +5,7 @@ const formUpload = require('../helper/formUpload');
 
 route.get('/', productsContrller.get);
 route.post('/', formUpload.single('img'), productsContrller.store);
-route.put('/:id', productsContrller.update);
-route.delete('/:filename', productsContrller.dump);
+route.put('/:id', formUpload.single('img'), productsContrller.update);
+route.delete('/:id', productsContrller.dump);
 
 module.exports = route;
