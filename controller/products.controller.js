@@ -15,23 +15,32 @@ const productsContrller = {
         }
     },
     store: async (req, res) => {
-        const request = {
-            ...req.body,
-            img: req.file.filename
-        }
-        try {
-            const result = await productsModel.store(request);
-            return res.status(201).send({
-                message: "Berhasil Nambah Data",
-                data: {
-                    ...request,
-                    db: result
-                }
-            });
-        } catch (error) {
-            return res.status(500).send({
-                message: error.message
-            });
+        const {nama, harga, deskripsi} = req.body
+        console.log(req)
+        if(!nama || !req.file || !harga || !deskripsi) {
+            unlink(`public/uploads/${req.file.filename}`,(err)=> {
+                if(err) console.log('file tidak ada.')
+            })
+            return res.status(400).send({message: 'semua kolom harus diisi!'})
+        }else {
+            const request = {
+                ...req.body,
+                img: req.file.filename
+            }
+            try {
+                const result = await productsModel.store(request);
+                return res.status(201).send({
+                    message: "Berhasil Nambah Data",
+                    data: {
+                        ...request,
+                        db: result
+                    }
+                });
+            } catch (error) {
+                return res.status(500).send({
+                    message: error.message
+                });
+            }
         }
         // productsModel.store(request).then((result)=> {
         //     return res.status(201).send({
@@ -64,19 +73,22 @@ const productsContrller = {
         }
     },
     dump: async (req, res) => {
-        try {
-            const request = {
-                id: req.params
-            };
-            const result = await productsModel.dump(request);
-            return res.status(200).send({
-                message:result
-            });
-        } catch (error) {
-            return res.status(500).send({
-                message: error.message
-            });
+        if(!req.params.id) {
+            return res.status(400).send({message: 'data belum pernah dibuat!'});
+        } else {
+            try {
+                const request = {
+                    id: req.params.id
+                };
+                const result = await productsModel.dump(request);
+                return res.status(200).send({
+                    message:result
+                });
+            } catch (error) {
+                return res.status(error.status ?? 500).send(error);
+            }
         }
+        
     }
 }
 

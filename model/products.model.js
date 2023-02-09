@@ -43,22 +43,22 @@ const productsModel = {
             });
         });
     },
-    dump: (request) => {
-        const {id} = request;
+    dump: (id) => {
         return new Promise( (resolve, reject) => {
             db.query(`SELECT * from products WHERE id='${id}'`, (err, resultGet)=> {
-                unlink(`public/uploads/${resultGet[0].img}`, (err) => {
-                    if(err) console.log(err);
-                });
+                if(resultGet.length <= 0) {
+                    return reject({message: `data tidak ditemukan`, data: [], status: 400});
+                }
                 if(!err) {
                     db.query(`DELETE FROM products WHERE id=${id}`, (err, result) => {
+                        console.log(err)
                         if(err) {
                             return reject({message: `gagal menghapus produk dengan id ${id}`, error: err.message});
                         }
                         return resolve({message: `berhasil menghapus produk dengan id ${id}`, data: resultGet[0]}); 
                     })
                 }   
-            })
+            });
         });
     }
 }

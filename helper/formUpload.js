@@ -12,7 +12,6 @@ const storage = multer.diskStorage({
 const formUpload = multer({
     storage: storage,
     fileFilter: (req, file, cb) => {
-        console.log(req)
         let formatType = path.extname(file.originalname);
         if(formatType === ".png" || ".jpg" || ".jpeg") {
             cb(null, true);
