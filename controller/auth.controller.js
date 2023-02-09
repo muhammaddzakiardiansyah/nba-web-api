@@ -24,8 +24,7 @@ const authController = {
         };
         try {
             const result = await authModel.login(request);
-            const verifyPassword = await argon2.verify(result.password, request.password)
-            console.log(verifyPassword)
+            const verifyPassword = await argon2.verify(result.password, request.password);
             if(verifyPassword) {
                 const token = jwt.sign({id: result.id, role: result.role}, 'wokawokawok');
                 console.log(token);
