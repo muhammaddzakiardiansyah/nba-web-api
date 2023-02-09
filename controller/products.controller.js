@@ -19,7 +19,6 @@ const productsContrller = {
             ...req.body,
             img: req.file.filename
         }
-        console.log(res)
         try {
             const result = await productsModel.store(request);
             return res.status(201).send({
@@ -67,7 +66,7 @@ const productsContrller = {
     dump: async (req, res) => {
         try {
             const request = {
-                ...req.params
+                id: req.params
             };
             const result = await productsModel.dump(request);
             return res.status(200).send({

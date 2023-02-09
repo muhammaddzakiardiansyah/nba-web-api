@@ -15,7 +15,6 @@ const productsModel = {
     },
     store: (request) => {
         const {nama, deskripsi, img, harga} = request;
-        console.log(request);
         return new Promise((resolve, reject) => {
             db.query(`INSERT INTO products (nama, deskripsi, img, harga) VALUES ('${nama}', '${deskripsi}', '${img}', '${harga}')`, (err, result) => {
                 if(err) {
