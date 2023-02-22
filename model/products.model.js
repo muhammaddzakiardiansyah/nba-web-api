@@ -1,6 +1,5 @@
 const db = require('../helper/config');
 const {unlink} = require('node:fs');
-const { resolve } = require('node:path');
 const productsModel = {
     get: (req, res) => {
         return new Promise( (resolve, reject) => {
@@ -13,10 +12,23 @@ const productsModel = {
             });
         });
     },
+
+    posts: (req, res) => {
+        return new Promise( (resolve, reject) => {
+            db.query('SELECT products.nama, products.deskripsi, products.img, products.harga, users.name FROM products LEFT JOIN users ON products.users_id=users.id', (err, result) => {
+                if(err) {
+                    return reject(err.message);
+                } else {
+                    return resolve(result);
+                }
+            });
+        });
+    },
+
     store: (request) => {
-        const {nama, deskripsi, img, harga} = request;
+        const {nama, deskripsi, img, harga, users_id} = request;
         return new Promise((resolve, reject) => {
-            db.query(`INSERT INTO products (nama, deskripsi, img, harga) VALUES ('${nama}', '${deskripsi}', '${img}', '${harga}')`, (err, result) => {
+            db.query(`INSERT INTO products (nama, deskripsi, img, harga, users_id) VALUES ('${nama}', '${deskripsi}', '${img}', '${harga}', '${users_id}')`, (err, result) => {
                 if(err) {
                     return reject(err);
                 }
@@ -26,14 +38,22 @@ const productsModel = {
     },
     update: (request) => {
         const {id} = request;
-        const {nama, deskripsi, img, harga} = request;
+        const {nama, deskripsi, img, harga, users_id} = request;
         return new Promise( (resolve, reject) => {
             db.query(`SELECT * FROM products WHERE id='${id}'`, (err, resultGet) => {
+                if(resultGet.length <= 0) {
+                    if(typeof img != "undefined") {
+                        unlink(`public/uploads/${img}`, (err) => {
+                            if(err) console.log(err.message);
+                        });
+                    }
+                    return reject({message: 'data tidak ditemukan', status: 400});
+                }
                 unlink(`public/uploads/${resultGet[0].img}`, (err) => {
                     if(err) console.log(err);
                 });
                 if(!err) {
-                    db.query(`UPDATE products SET nama='${nama}', deskripsi='${deskripsi}', img='${img}', harga='${harga}' WHERE id='${id}'`, (err, result) => {
+                    db.query(`UPDATE products SET nama='${nama}', deskripsi='${deskripsi}', img='${img}', harga='${harga}', users_id='${users_id}' WHERE id='${id}'`, (err, result) => {
                         if(err) {
                             return reject(err);
                         }
@@ -49,6 +69,9 @@ const productsModel = {
                 if(resultGet.length <= 0) {
                     return reject({message: `data tidak ditemukan`, data: [], status: 400});
                 }
+                unlink(`public/uploads/${resultGet[0].img}`, (err) => {
+                    if(err) console.log(err.message);
+                });
                 if(!err) {
                     db.query(`DELETE FROM products WHERE id=${id}`, (err, result) => {
                         console.log(err)
