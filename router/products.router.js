@@ -16,7 +16,7 @@ const verifyToken = require('../helper/verifyToken');
 //       } else if (err) {
 //         return res.status(400).send({message: 'semua kolom harus diisi!'})
 //       }
-  
+
 //       return productsContrller.store(req, res)
 //     })
 //   })
@@ -39,8 +39,9 @@ const verifyToken = require('../helper/verifyToken');
 //   }
 route.get('/', productsContrller.get);
 route.get('/posts', productsContrller.posts);
-route.post('/', verifyToken,formUpload.single('img'),  productsContrller.store);
-route.put('/:id', verifyToken,formUpload.single('img'), productsContrller.update);
-route.delete('/:id', verifyToken,productsContrller.dump);
+route.post('/checkout/:id', productsContrller.checkout);
+route.post('/', verifyToken, formUpload.single('img'), productsContrller.store);
+route.put('/:id', verifyToken, formUpload.single('img'), productsContrller.update);
+route.delete('/:id', verifyToken, productsContrller.dump);
 
 module.exports = route;
